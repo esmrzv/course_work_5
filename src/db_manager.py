@@ -53,18 +53,21 @@ class DBManager:
             WHERE (salary_min + salary_max) > 
             (SELECT AVG(salary_min + salary_max) FROM vacancies);
         """)
-        return self.cursor.fetchall()
+        for i in self.cursor.fetchall():
+            print(i)
+            print("_________________________________________________________________________________________")
 
     def get_vacancies_with_keyword(self, keyword):
-        """
-        Получает список всех вакансий,
-        в названии которых содержатся переданные в метод слова
-        """
-        self.cursor.execute("""
-            SELECT * FROM vacancies 
-            WHERE vacancy_name ILIKE '%%' || %s || '%%';
-        """, (keyword, ))
-        return self.cursor.fetchall()
+        """получает список всех вакансий, у которых зарплата выше средней по всем вакансиям"""
+        self.cursor.execute(f"SELECT vacancy_name, salary_min, salary_max, vacancy_url FROM vacancies "
+                            f"WHERE vacancy_name LIKE '%{keyword}%'")
+        lists = self.cursor.fetchall()
+        if len(lists) == 0:
+            print('Вакансии с таким ключевым словом не найдены!!!')
+        else:
+            for i in lists:
+                print(i)
+                print("_________________________________________________________________________________________")
 
     def __del__(self):
         self.cursor.close()
